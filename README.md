@@ -1,6 +1,16 @@
 # ajax.js
 
-方便实用的 ajax 插件，兼容 jquery api
+方便实用的 ajax 插件
+
+* 可指定统一 base url
+* 可统一处理回调，统一处理报错
+* 可切换本地 json文件 调试
+* 自动解析返回 json
+* 兼容 jquery $.ajax
+* 支持 script标签 引入
+* 支持 seajs
+* 支持 requirejs
+* 支持 webpack
 
 ```javascript
 
