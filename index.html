@@ -24,7 +24,7 @@
     </div>
     <script src="ajax.js"></script>
     <script>
-    ajax.base = '.'
+    ajax.base = './'
     ajax.callback = function(xhr, options, res) {
         if (res && !res.error) {
             options.success(res, res.data || [])
@@ -35,9 +35,7 @@
 
     ajax({
         url: 'index.html',
-        local: {
-        	data: []
-        },
+        local: 'data.json',
         success: function(res, data) {
             console.log(res, data)
         }
