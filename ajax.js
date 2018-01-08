@@ -1,7 +1,6 @@
 /**
- * wushufen
- * 20171228
- * 20180108
+ * https://github.com/wusfen/ajax.js
+ * wushufen 20171228~20180108
  */
 /*
 
@@ -37,6 +36,7 @@ xhr = ajax({
     }
 })
 
+// 换种写法
 ajax.post(options)
 ajax.get(options)
 
