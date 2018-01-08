@@ -7,7 +7,7 @@
 * 可切换本地 json文件 调试
 * 自动解析返回 json
 * 兼容 jquery $.ajax
-* 支持 script标签 引入
+* 支持 script标签引入
 * 支持 seajs
 * 支持 requirejs
 * 支持 webpack
@@ -34,10 +34,10 @@ ajax.callback = function(xhr, options, res) {
 
 // 请求示例
 xhr = ajax({
-    url: 'url',
+    url: 'url',             // 'http://' 写完整的url 不使用 base
     local: 'data/x.json',   // location.href.match(/[?&#]ajaxLocal/i) 开启本地json
     type: 'post',           // 默认 'get'
-    data: {
+    data: {                 // 请求参数
         key: 'value'
     },
     // json 自动解析
