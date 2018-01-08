@@ -1,0 +1,11 @@
+{
+	"error": 1,
+	"msg": "callback message",
+	"data": [
+		{"id":1, "name":"wsf"}
+	],
+	"pageIndex": 1,
+	"pageSize": 10,
+	"pageCount": 10,
+	"rowCount": 100
+}
