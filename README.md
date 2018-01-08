@@ -41,6 +41,7 @@ ajax.post(options)
 ajax.get(options)
 
 // 保存最后一次信息，方便调试
+ajax.xhr
 ajax.options
 ajax.res
 ```

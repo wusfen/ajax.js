@@ -3,6 +3,12 @@
  * wushufen 20171228~20180108
  */
 !(function() {
+    if (!window.XMLHttpRequest) {
+        window.XMLHttpRequest = function() {
+            return new ActiveXObject("Microsoft.XMLHTTP")
+        }
+    }
+
     function ajax(options) {
 
         // args
@@ -10,7 +16,7 @@
         var _ = options
         _.base = _.base || ajax.base || ''
         _.url = _.url || ''
-        _.url =  _.base && !_.url.match('://') ? _.base + '/' + _.url : _.url
+        _.url = _.base && !_.url.match('://') ? _.base + '/' + _.url : _.url
         _.type = _.type || 'GET'
         _.type = _.type.toUpperCase()
         _.async = _.async !== undefined ? _.async : true
@@ -29,6 +35,8 @@
 
         // xhr
         var xhr = new XMLHttpRequest()
+        ajax.xhr = xhr
+
         // handle
         xhr.onreadystatechange = function() {
             // console.log(xhr.readyState, xhr.status, xhr.responseText)
@@ -68,7 +76,7 @@
         _._url_ = _._url_ + '?' + data
         xhr.open(_.type, _._url_, _.async)
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded charset=UTF-8')
-        xhr.send(data)
+        xhr.send(_.type == 'POST' ? data : null)
 
         return xhr
     }

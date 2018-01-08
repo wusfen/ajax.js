@@ -27,7 +27,7 @@
     ajax.base = './'
     ajax.callback = function(xhr, options, res) {
         if (res && !res.error) {
-            options.success(res, res.data || [])
+            options.success(res, res.data || [], xhr)
         } else {
             alert(options.url + ': ' + (res.msg || '请求出错'))
         }
@@ -36,8 +36,9 @@
     ajax({
         url: 'index.html',
         local: 'data.json',
-        success: function(res, data) {
+        success: function(res, data, xhr) {
             console.log(res, data)
+            container.innerText = xhr.responseText
         }
     })
     </script>
