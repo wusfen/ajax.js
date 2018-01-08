@@ -36,6 +36,7 @@ xhr = ajax({
     }
 })
 
+// 换种写法
 ajax.post(options)
 ajax.get(options)
 
