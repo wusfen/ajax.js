@@ -11,6 +11,7 @@
 * 支持 seajs
 * 支持 requirejs
 * 支持 webpack
+* 支持 ie5+
 
 ```javascript
 
