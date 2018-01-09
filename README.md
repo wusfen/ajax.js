@@ -77,3 +77,14 @@ vue项目，import Vue 和 ajax 后加这行代码，方便使用
 ```javascript
 Vue.prototype.ajax = ajax
 ```
+示例
+```javascript
+var vue = new Vue({
+    // ...
+    methods: {
+        fun: function(){
+            this.ajax(options)
+        }
+    }
+})
+```
