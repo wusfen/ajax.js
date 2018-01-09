@@ -71,3 +71,9 @@ ajax.xhr
 ajax.options
 ajax.res
 ```
+
+
+vue项目，import Vue 和 ajax 后加这行代码，方便使用
+```javascript
+Vue.prototype.ajax = ajax
+```
