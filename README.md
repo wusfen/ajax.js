@@ -18,19 +18,34 @@
 // base
 ajax.base = 'server/path'
 
+// before
+ajax.before = function (xhr, options) {
+
+    // 添加一个简易的 loading...
+    document._title = document.title
+    document.title = 'loading...'
+
+    // return true // 返回true则取消发送
+}
+
 // 统一回调处理
 ajax.callback = function(xhr, options, res) {
+    
+    // loading 结束
+    setTimeout(function () {
+        document.title = document._title
+    }, 300)
 
     // 符合条件才调用 success
     if (res && !res.error) {
 
-        // 添加参数
-        options.success(res, res.data || [])
+        options.success(res, res.data || []) // 自定义success参数
 
     // 错误处理
     } else {
         alert(options.url + ': ' + (res.msg || '请求出错'))
     }
+
 }
 
 // 请求示例

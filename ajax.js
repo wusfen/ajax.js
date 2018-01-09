@@ -20,6 +20,7 @@
         _.type = _.type || 'GET'
         _.type = _.type.toUpperCase()
         _.async = _.async !== undefined ? _.async : true
+        _.before = _.before || ajax.before || function() {}
         _.success = _.success || function() {}
         _.error = _.error || function() {}
         ajax.options = options
@@ -36,6 +37,11 @@
         // xhr
         var xhr = new XMLHttpRequest()
         ajax.xhr = xhr
+
+        // before
+        if (_.before(xhr, options)) {
+            return
+        }
 
         // handle
         xhr.onreadystatechange = function() {
