@@ -1,6 +1,6 @@
 /**
  * https://github.com/wusfen/ajax.js
- * wushufen 20171228~20180108
+ * wushufen 20171228~20180516
  */
 !(function() {
     if (!window.XMLHttpRequest) {
@@ -9,39 +9,77 @@
         }
     }
 
-    function ajax(options) {
+    var noop = function () {}
 
-        // args
-        options = options || {}
-        var _ = options
-        _.base = _.base || ajax.base || ''
-        _.url = _.url || ''
-        _.url = _.base && !_.url.match('://') ? _.base + '/' + _.url : _.url
-        _.type = _.type || 'GET'
-        _.type = _.type.toUpperCase()
-        _.async = _.async !== undefined ? _.async : true
-        _.before = _.before || ajax.before || function() {}
-        _.success = _.success || function() {}
-        _.error = _.error || function() {}
+    var setting = {
+        base: '',
+        url: '',
+        type: 'get',
+        data: {},
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        async: true,
+        cache: false,
+        mock: false,
+        before: noop,
+        after: noop,
+        success: noop,
+        error: noop
+    }
+
+    // webpack 中 typeof+module.exports 会报错
+    // https://github.com/webpack/webpack/issues/7318
+    var _typeof = function (obj) {
+        return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase()
+    }
+
+    var extend = function (obj, _obj) {
+        for(var key in _obj){
+            var val = obj[key]
+            var _val = _obj[key]
+            if (_typeof(_val) == 'object') {
+                obj[key] = extend(val?val:{}, _val)
+            }else{
+                obj[key] = _obj[key]
+            }
+        }
+        return obj
+    }
+
+    function ajax(options) {
+        var _setting = extend({}, setting)
+        options = extend(_setting, options)
+        options.type = options.type.toUpperCase()
         ajax.options = options
 
-        // data
-        var data = _.data = _.data || {}
-        var kvs = []
-        data._t_ = new Date().getTime()
-        for (var key in data) {
-            kvs.push(key + '=' + data[key])
-        }
-        data = kvs.join('&') // key=value&key2=value2
-
-        // xhr
-        var xhr = new XMLHttpRequest()
-        ajax.xhr = xhr
-
         // before
-        if (_.before(xhr, options)) {
+        if (options.before(xhr, options)) {
             return
         }
+
+        // data
+        var data = options.data
+        var kvs = []
+        data._t_ = + new Date
+        for (var key in data) {
+            kvs.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+        }
+        options.dataStr = kvs.join('&') // key=value&key2=value2
+
+        // href
+        options.href = options.url
+        if (options.base && !options.url.match('://')) {
+            options.href = options.base + '/' + options.url
+        }
+        if (options.type == 'GET') {
+            options.href = options.href + '?' + options.dataStr
+        }
+
+
+        // xhr
+        var xhr = new XMLHttpRequest
+        ajax.xhr = xhr
 
         // handle
         xhr.onreadystatechange = function() {
@@ -56,37 +94,36 @@
                 try { res = JSON.parse(res) } catch (e) {}
                 ajax.res = res
 
-                // callback
-                if (ajax.callback) {
-                    ajax.callback(xhr, options, res)
-                } else {
-                    _.success(res)
+                // after
+                if(options.after(xhr, options, res)){
+                    return
                 }
+                options.success(res)
 
             }
             // error
             else {
 
-                // callback
-                if (ajax.callback) {
-                    ajax.callback(xhr, options, '')
-                } else {
-                    _.error(xhr)
+                // after
+                if (options.after(xhr, options, '')) {
+                    return
                 }
+                options.error(xhr)
 
             }
         }
 
         // send
-        _._url_ = location.href.match(/[?&#]ajaxLocal/i) && _.local ? _.local : _.url
-        _._url_ = _._url_ + '?' + data
-        xhr.open(_.type, _._url_, _.async)
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded charset=UTF-8')
-        xhr.send(_.type == 'POST' ? data : null)
+        xhr.open(options.type, options.href, options.async)
+        for(var key in options.headers){
+            xhr.setRequestHeader(key, options.headers[key])
+        }
+        xhr.send(options.type == 'POST' ? options.dataStr : null)
 
         return xhr
     }
 
+    ajax.setting = setting
     ajax.post = function(options) {
         options.type = 'POST'
         return ajax(options)
@@ -95,19 +132,10 @@
         options.type = 'GET'
         return ajax(options)
     }
+    ajax.setUp = function (options) {
+        return extend(setting, options)
+    }
 
     // export
-    if (typeof define != 'undefined' && (define.cmd || define.amd)) {
-        define(function(require, exports, module) {
-            return module.exports = ajax
-        })
-    } else
-    if (typeof window != 'undefined') {
-        window.ajax = ajax
-        if (typeof $ == 'undefined') {
-            $ = {
-                ajax: ajax
-            }
-        }
-    }
+    module.exports = ajax
 })();
