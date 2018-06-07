@@ -43,7 +43,20 @@
 
     ajax({
         url: 'index.html',
-        local: 'data.json',
+        data: {
+            n: 1,
+            o: {
+                k: 's'
+            },
+            a: [1,2],
+            a2: [22,{
+                ak: 3,
+                ak2: {
+                    akk: 4
+                }
+            },222]
+
+        },
         success: function(res, data, xhr) {
             console.log(res, data)
             container.innerText = xhr.responseText
