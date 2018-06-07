@@ -28,8 +28,6 @@
         error: noop
     }
 
-    // webpack 中 typeof+module.exports 会报错
-    // https://github.com/webpack/webpack/issues/7318
     var typeOf = function (obj) {
         return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase()
     }
@@ -185,6 +183,9 @@
     }
 
     // export
-    module.exports = ajax
-    // window.ajax = ajax
+    if (typeof module != 'undefined') {
+        module.exports = ajax
+    } else {
+        window.ajax = ajax
+    }
 })(typeof window != 'undefined' ? window : global);

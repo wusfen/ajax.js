@@ -42,8 +42,9 @@
     }
 
     ajax({
-        url: 'index.html',
-        data: {
+        url: 'http://baidxu.com',
+        type: 'post',
+        data: `{
             n: 1,
             o: {
                 k: 's'
@@ -56,7 +57,7 @@
                 }
             },222]
 
-        },
+        }`,
         success: function(res, data, xhr) {
             console.log(res, data)
             container.innerText = xhr.responseText
