@@ -6,13 +6,15 @@
 
 // 请求示例
 xhr = ajax({
-    url: 'url',             // 'http://' 写完整的url 不使用 base
+    url: 'url',
     type: 'post',           // 默认 'get'
     data: {                 // 请求参数
         key: 'value'
     },
-    // json 自动解析
-    success: function(res, data){   // 默认就 res 一个参数，可在全局配置after里自定义传多个参数如 res.data 作为第二个参数
+    success: function(res){  
+        // 如果返回为 json ，则 res 已自动解析
+        // 默认就 res 一个参数，可在全局配置 after 里自定义传多个参数
+        // 如 res.data 作为第二个参数 data
         //...
     }
 })
@@ -21,7 +23,7 @@ xhr = ajax({
 ajax.post(options)
 ajax.get(options)
 
-// 保存最后一次信息，方便调试
+// 保存了最后一次信息，方便调试
 ajax.xhr
 ajax.options
 ajax.res
@@ -29,20 +31,20 @@ ajax.res
 
 // 全局配置
 ajax.setUp({
-    base: 'server/path',
-    type: 'post',
-    headers: {
+    base: 'server/path',   // url base
+    type: 'post',          // 修改默认 type
+    headers: {             // 请示头
         'Content-Type': 'application/json'
     },
-    before: function (xhr, options) {
+    before: function (xhr, options) {      // 发送前处理
         // loading...
 
         // 对请求参数进行处理
         options.data = JSON.stringify(options.data, null, '  ')
 
-        // return true // if返回true则取消发送
+        // return true // if return true 则取消发送
     },
-    after: function(xhr, options, res) {
+    after: function(xhr, options, res) {   // 返回后处理
         // loading 结束
 
         // 对响应结果进行判断
