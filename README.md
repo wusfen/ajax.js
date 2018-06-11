@@ -4,45 +4,6 @@
 
 ```javascript
 
-// 基础配置
-ajax.setUp({
-    base: 'server/path',
-    before: function (xhr, options) {
-
-        // 对参数进行处理
-        options.data = {
-            data: JSON.stringify(options.data)
-        }
-
-        // 添加一个 loading...
-        document._title = document.title
-        document.title = 'loading...'
-
-        // return true // 返回true则取消发送
-    },
-    after: function(xhr, options, res) {
-
-        // loading 结束
-        document.title = document._title
-
-        // 判断
-        if (res && res.errorCode = 0) {
-
-            // 手动调用 success 并传参
-            options.success(res, res.data)
-
-        } else {
-            
-            // 统一处理错误
-            console.log(res.msg || '请求出错')
-        }
-
-        // 表示已经处理了，不会再调 success, error
-        return true
-    }
-})
-
-
 // 请求示例
 xhr = ajax({
     url: 'url',             // 'http://' 写完整的url 不使用 base
@@ -51,7 +12,7 @@ xhr = ajax({
         key: 'value'
     },
     // json 自动解析
-    success: function(res, data){
+    success: function(res, data){   // 默认就 res 一个参数，可在全局配置after里自定义传多个参数如 res.data 作为第二个参数
         //...
     }
 })
@@ -64,6 +25,46 @@ ajax.get(options)
 ajax.xhr
 ajax.options
 ajax.res
+
+
+// 全局配置
+ajax.setUp({
+    base: 'server/path',
+    type: 'post',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    before: function (xhr, options) {
+        // loading...
+
+        // 对请求参数进行处理
+        options.data = JSON.stringify(options.data, null, '  ')
+
+        // return true // if返回true则取消发送
+    },
+    after: function(xhr, options, res) {
+        // loading 结束
+
+        // 对响应结果进行判断
+        if (res && res.errorCode = 0) {
+
+            // 手动调用 success 并传参
+            options.success(res, res.data)
+
+        } else {
+
+            // 统一处理错误
+            console.log(res.msg || '请求出错')
+        }
+
+        // 表示已经处理了，不会再调 success, error
+        return true
+    }
+})
+
+// 当前的全局配置
+ajax.setting
+
 ```
 
 
