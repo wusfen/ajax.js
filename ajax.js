@@ -1,6 +1,6 @@
 /**
  * https://github.com/wusfen/ajax.js
- * wushufen 20171228~20180707
+ * wushufen 20171228~20180613
  */
 !(function (window) {
     if (!window.XMLHttpRequest) {
@@ -10,23 +10,6 @@
     }
 
     var noop = function () { }
-
-    var setting = {
-        base: '',
-        url: '',
-        type: 'get',
-        data: {},
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        async: true,
-        cache: false,
-        mock: false,
-        before: noop,
-        after: noop,
-        success: noop,
-        error: noop
-    }
 
     var typeOf = function (obj) {
         return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase()
@@ -56,15 +39,15 @@
     var serialize = function (value) {
         var arr = [] // [ {keys, value}, ]
 
-        !(function loop(value, keys) {
+        !(function loop(keys, value) {
             if (typeof value != 'object') {
                 arr.push({ keys: keys, value: value })
             } else {
                 for (var k in value) {
-                    loop(value[k], keys.concat(k)) // [k1,k2,..]
+                    loop(keys.concat(k), value[k]) // [k1,k2,..]
                 }
             }
-        })(value, [])
+        })([], value)
 
         // [ 'obj[key][]=value', ]
         arr = map(arr, function (item, i) {
@@ -89,6 +72,22 @@
         return arr.join('&')
     }
 
+    var setting = {
+        base: '',
+        url: '',
+        type: 'get',
+        data: {},
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        async: true,
+        cache: false,
+        before: noop,
+        after: noop,
+        success: noop,
+        error: noop
+    }
+
     function ajax(options) {
         var _setting = extend({}, setting)
         options = extend(_setting, options)
@@ -102,7 +101,7 @@
 
         // data
         var data = options.data
-        // raw, text||application/json
+        // raw: text||application/json
         if (typeOf(data) == 'string') {
             options.dataStr = data
         }
@@ -117,7 +116,7 @@
             options.href = options.base + '/' + options.url
         }
         if (options.type == 'GET') {
-            options.href = options.href + '?' + options.dataStr
+            options.href = options.href + (options.href.match(/\?/) ? '&' : '?') + options.dataStr
         }
 
 
@@ -130,40 +129,41 @@
             // console.log(xhr.readyState, xhr.status, xhr.responseText)
             if (xhr.readyState != 4) return
 
+            // res
+            var res = xhr.responseText
+            try { res = JSON.parse(res) } catch (e) { }
+            ajax.res = res
+
+            // after
+            if (options.after(xhr, options, res)) {
+                return
+            }
+
             // success
-            if (xhr.status == 0 || xhr.status == 200 || xhr.status == 304) {
-
-                // res
-                var res = xhr.responseText
-                try { res = JSON.parse(res) } catch (e) { }
-                ajax.res = res
-
-                // after
-                if (options.after(xhr, options, res)) {
-                    return
-                }
+            // xhr.status == 0 || 
+            if (xhr.status == 200 || xhr.status == 304) {
                 options.success(res)
-
             }
             // error
             else {
-
-                // after
-                if (options.after(xhr, options, '')) {
-                    return
-                }
                 options.error(xhr)
-
             }
         }
 
-        // send
+        // open
         xhr.open(options.type, options.href, options.async)
 
         // headers
         for (var key in options.headers) {
             xhr.setRequestHeader(key, options.headers[key])
         }
+
+        // no-cache
+        if (!options.cache) {
+            xhr.setRequestHeader('If-Modified-Since', 0)
+        }
+
+        // send
         xhr.send(options.type == 'POST' ? options.dataStr : null)
 
         return xhr
@@ -178,9 +178,10 @@
         options.type = 'GET'
         return ajax(options)
     }
-    ajax.setUp = function (options) {
+    ajax.config = function (options) {
         return extend(setting, options)
     }
+    ajax.setUp = ajax.config
 
     // export
     if (typeof module != 'undefined') {
@@ -188,4 +189,4 @@
     } else {
         window.ajax = ajax
     }
-})(typeof window != 'undefined' ? window : global);
+})(window);

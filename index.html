@@ -24,27 +24,36 @@
     </pre>
     <script src="ajax.js"></script>
     <script>
-    ajax.base = './'
-    ajax.before = function () {
+    ajax.setting.base = './'
+    ajax.setting.before = function () {
         document._title = document.title
         document.title = 'loading...'
     }
-    ajax.callback = function(xhr, options, res) {
+    ajax.setting.after = function(xhr, options, res) {
         setTimeout(function () {
             document.title = document._title
         }, 300)
 
-        if (res && !res.error) {
-            options.success(res, res.data || [], xhr)
-        } else {
-            alert(options.url + ': ' + (res.msg || '请求出错'))
+        var success = options.success
+        options.success = function(){
+            if (res && !res.error) {
+                success(res, res.data || [], xhr)
+            } else{
+                alert(options.url + ': ' + (res.msg || '请求出错'))
+            }
+            
         }
+
+        options.error = function () {
+            alert(options.url + ': ' + (res.msg || '网络异常'))
+        }
+
     }
 
     ajax({
-        url: 'http://baidxu.com',
-        type: 'post',
-        data: `{
+        url: 'http://baidxue.com',
+        type: 'get',
+        data: {
             n: 1,
             o: {
                 k: 's'
@@ -57,9 +66,9 @@
                 }
             },222]
 
-        }`,
+        },
         success: function(res, data, xhr) {
-            console.log(res, data)
+            console.log(typeof xhr)
             container.innerText = xhr.responseText
         }
     })
