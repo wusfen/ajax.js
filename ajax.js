@@ -1,6 +1,6 @@
 /**
  * https://github.com/wusfen/ajax.js
- * wushufen 20171228~20180613
+ * wushufen 20171228~20180704
  */
 !(function (window) {
     if (!window.XMLHttpRequest) {
@@ -65,7 +65,7 @@
                 keyPath += _key
             })
             // ecKeyPath=ecValue
-            return encodeURIComponent(keyPath) + (keyPath ? '=' : '') + encodeURIComponent(item.value)
+            return encodeURIComponent(keyPath).replace(/%20/g, '+') + (keyPath ? '=' : '') + encodeURIComponent(item.value).replace(/%20/g, '+')
         })
 
         // ...&...
@@ -126,8 +126,8 @@
 
         // handle
         xhr.onreadystatechange = function () {
-            // console.log(xhr.readyState, xhr.status, xhr.responseText)
             if (xhr.readyState != 4) return
+            // console.log(xhr.readyState, xhr.status, xhr.responseText)
 
             // res
             var res = xhr.responseText
@@ -141,7 +141,8 @@
 
             // success
             // xhr.status == 0 || 
-            if (xhr.status == 200 || xhr.status == 304) {
+            var status = xhr.status
+            if (status == 0 || (status>=200 && status<300) || status == 304) {
                 options.success(res)
             }
             // error
