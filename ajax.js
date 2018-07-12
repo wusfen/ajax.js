@@ -1,6 +1,6 @@
 /**
  * https://github.com/wusfen/ajax.js
- * wushufen 20171228~20180704
+ * wushufen 20171228~20180712
  */
 !(function (window) {
     if (!window.XMLHttpRequest) {
@@ -78,6 +78,7 @@
         type: 'get',
         data: {},
         headers: {
+            'X-Requested-With': 'XMLHttpRequest',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
         async: true,
