@@ -1,6 +1,6 @@
 /**
  * https://github.com/wusfen/ajax.js
- * wushufen 20171228~20180712
+ * wushufen 20171228~20180720
  */
 !(function (window) {
     if (!window.XMLHttpRequest) {
@@ -40,7 +40,7 @@
         var arr = [] // [ {keys, value}, ]
 
         !(function loop(keys, value) {
-            if (typeof value != 'object') {
+            if (typeof value != 'object' && value !== undefined) {
                 arr.push({ keys: keys, value: value })
             } else {
                 for (var k in value) {
@@ -49,10 +49,11 @@
             }
         })([], value)
 
-        // [ 'obj[key][]=value', ]
+        // [ 'obj[key]=value', ]
         arr = map(arr, function (item, i) {
-            var keyPath = ''
             var keys = item.keys
+            var value = item.value
+            var keyPath = ''
             map(keys, function (key, i) {
                 var _key = '[' + key + ']'
                 if (i == 0) {
@@ -65,7 +66,9 @@
                 keyPath += _key
             })
             // ecKeyPath=ecValue
-            return encodeURIComponent(keyPath).replace(/%20/g, '+') + (keyPath ? '=' : '') + encodeURIComponent(item.value).replace(/%20/g, '+')
+            keyPath = encodeURIComponent(keyPath).replace(/%20/g, '+')
+            value = item.value === null ? '' : encodeURIComponent(item.value).replace(/%20/g, '+')
+            return keyPath + (keyPath ? '=' : '') + value
         })
 
         // ...&...
@@ -143,7 +146,7 @@
             // success
             // xhr.status == 0 || 
             var status = xhr.status
-            if (status == 0 || (status>=200 && status<300) || status == 304) {
+            if (status == 0 || (status >= 200 && status < 300) || status == 304) {
                 options.success(res)
             }
             // error
