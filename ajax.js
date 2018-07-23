@@ -53,7 +53,7 @@
             } else if (typeOf(value) == 'object' || typeOf(value) == 'array') {
 
                 for (var k in value) {
-                    if (!obj.hasOwnProperty(k)) continue
+                    if (!value.hasOwnProperty(k)) continue
 
                     loop(keys.concat(k), value[k]) // [k1,k2,..]
                 }
