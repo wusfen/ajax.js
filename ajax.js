@@ -1,6 +1,6 @@
 /**
  * https://github.com/wusfen/ajax.js
- * wushufen 20171228~20180720
+ * wushufen 20171228~20180723
  */
 !(function (window) {
     if (!window.XMLHttpRequest) {
@@ -36,16 +36,30 @@
         return list
     }
 
-    var serialize = function (value) {
+    // to x-www-form-urlencoded
+    var encodeUrl = function (value) {
         var arr = [] // [ {keys, value}, ]
 
         !(function loop(keys, value) {
-            if (typeof value != 'object' && value !== undefined) {
-                arr.push({ keys: keys, value: value })
-            } else {
+
+            if (typeOf(value) == 'undefined') {
+
+            } else if (typeOf(value) == 'null') {
+                arr.push({ keys: keys, value: '' })
+
+            } else if (typeOf(value) == 'function') {
+                arr.push({ keys: keys, value: value() })
+
+            } else if (typeOf(value) == 'object' || typeOf(value) == 'array') {
+
                 for (var k in value) {
+                    if (!obj.hasOwnProperty(k)) continue
+
                     loop(keys.concat(k), value[k]) // [k1,k2,..]
                 }
+
+            } else {
+                arr.push({ keys: keys, value: value })
             }
         })([], value)
 
@@ -67,7 +81,7 @@
             })
             // ecKeyPath=ecValue
             keyPath = encodeURIComponent(keyPath).replace(/%20/g, '+')
-            value = item.value === null ? '' : encodeURIComponent(item.value).replace(/%20/g, '+')
+            value = encodeURIComponent(value).replace(/%20/g, '+')
             return keyPath + (keyPath ? '=' : '') + value
         })
 
@@ -111,7 +125,7 @@
         }
         // form
         else {
-            options.dataStr = serialize(data)
+            options.dataStr = encodeUrl(data)
         }
 
         // href
