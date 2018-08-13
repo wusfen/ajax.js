@@ -1,7 +1,4 @@
-/**
- * https://github.com/wusfen/ajax.js
- * wushufen 20171228~20180723
- */
+/*! @preserve https://github.com/wusfen/ajax.js */
 !(function (window) {
     if (!window.XMLHttpRequest) {
         window.XMLHttpRequest = function () {
