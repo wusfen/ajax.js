@@ -48,7 +48,7 @@ ajax.setUp({
         // loading 结束
 
         // 对响应结果进行判断
-        if (res && res.errorCode = 0) {
+        if (res && res.errorCode == 0) {
 
             // 手动调用 success 并传参
             options.success(res, res.data)
