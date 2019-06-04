@@ -10,6 +10,7 @@ xhr = ajax({
   headers: {
     'Content-Type': 'application/json'
   },
+  responseType: '',
   data: { // 内部会根据头部自动转成对应的格式
     key: 'value'
   },

@@ -2,77 +2,72 @@
 <html lang="zh-cn">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="renderer" content="webkit">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <meta name="MobileOptimized" content="320">
-    <meta name="HandheldFriendly" content="true">
-    <meta name="full-screen" content="yes">
-    <meta name="x5-fullscreen" content="true">
-    <meta name="browsermode" content="application">
-    <meta name="x5-page-mode" content="app">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <title>ajax.js</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <meta name="MobileOptimized" content="320">
+  <meta name="HandheldFriendly" content="true">
+  <meta name="full-screen" content="yes">
+  <meta name="x5-fullscreen" content="true">
+  <meta name="browsermode" content="application">
+  <meta name="x5-page-mode" content="app">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <title>ajax.js</title>
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    textarea {
+      width: 100%;
+    }
+  </style>
 </head>
 
 <body>
-    <pre id="container">
-    </pre>
-    <script src="ajax.js"></script>
-    <script>
-    ajax.setting.base = './'
-    ajax.setting.before = function () {
-        document._title = document.title
-        document.title = 'loading...'
-    }
-    ajax.setting.after = function(xhr, options, res) {
-        setTimeout(function () {
-            document.title = document._title
-        }, 300)
+  <input id="url" value="https://developer.mozilla.org">
+  <input id="type" value="get">
+  <input id="responseType" value="blob">
+  <button onclick="send()">send</button>
+  <textarea id="data" rows="10"></textarea>
+  <div style="display:flex">
+    <pre id="result" style="width:50%;overflow:auto"></pre>
+    <iframe id="iframe" style="width:50%;border:0"></iframe>
+  </div>
+  <script src="ajax.js"></script>
+  <script>
+    function send() {
+      iframe.src = ''
+      result.innerHTML = 'loading...'
 
-        var success = options.success
-        options.success = function(){
-            if (res && !res.error) {
-                success(res, res.data || [], xhr)
-            } else{
-                alert(options.url + ': ' + (res.msg || '请求出错'))
+      xhr = ajax({
+        url: url.value,
+        type: type.value,
+        data: data.value,
+        responseType: responseType.value,
+        success: function (res) {
+          if (responseType.value == 'blob') {
+            var url = URL.createObjectURL(res)
+            iframe.src = url
+            iframe.onload = function () {
+              // URL.revokeObjectURL(url)
             }
-            
+            var reader = new FileReader
+            reader.readAsText(res)
+            reader.onload = function (e) {
+              result.innerHTML = reader.result.replace(/</g, '&lt;')
+            }
+          } else {
+            result.innerHTML = res.replace(/</g, '&lt;')
+          }
         }
-
-        options.error = function () {
-            alert(options.url + ': ' + (res.msg || '网络异常'))
-        }
-
+      })
     }
-
-    ajax({
-        url: 'http://baidxue.com',
-        type: 'get',
-        data: {
-            n: 1,
-            o: {
-                k: 's'
-            },
-            a: [1,2],
-            a2: [22,{
-                ak: 3,
-                ak2: {
-                    akk: 4
-                }
-            },222]
-
-        },
-        success: function(res, data, xhr) {
-            console.log(typeof xhr)
-            container.innerText = xhr.responseText
-        }
-    })
-    </script>
+  </script>
 </body>
 
 </html>

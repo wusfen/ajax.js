@@ -38,7 +38,7 @@
     xhr.onreadystatechange = function () {
       if (xhr.readyState != 4) return
       var status = xhr.status
-      var res = xhr.responseText
+      var res = xhr.response || xhr.responseText
       try { res = JSON.parse(res) } catch (e) { }
 
       // success
@@ -50,6 +50,9 @@
         options.error && options.error(xhr)
       }
     }
+
+    // responseType
+    xhr.responseType = options.responseType
 
     // headers
     var headers = {
