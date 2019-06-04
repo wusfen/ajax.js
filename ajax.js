@@ -6,6 +6,31 @@
     }
   }
 
+  // x-www-form-urlencoded
+  function toUrlSearchParams(value) {
+    var params = ''
+
+    function loopValue(key, value) {
+      if (value && (value.constructor == Object || value instanceof Array)) {
+        for (var k in value) {
+          if (!value.hasOwnProperty(k)) continue
+          var subKey = !key ? k : '[' + k + ']' // obj[k]
+          loopValue(key + subKey, value[k])
+        }
+      } else {
+        if (value === undefined || value === null) value = ''
+        if (typeof value === 'function') value = value()
+        key = key.replace(/\[\d+?\]$/g, '[]') // obj[arr][0] => obj[arr][]
+        key = encodeURIComponent(key)
+        value = encodeURIComponent(value)
+        params += (params ? '&' : '') + key + '=' + value // &obj[k][s]=value
+      }
+    }
+    loopValue('', value)
+
+    return params.replace(/%20/g, '+') // ' ' => '+'
+  }
+
   function ajax(options) {
     var xhr = new XMLHttpRequest
 
@@ -47,46 +72,20 @@
       if (headers['Content-Type'].match('json')) data = JSON.stringify(data)
     }
 
-    // href
-    var href = options.href || '.'
+    // url
+    var url = options.url || '.'
     if (type == 'GET' && data) {
-      href += (href.match(/\?/) ? '&' : '?') + data
+      url += (url.match(/\?/) ? '&' : '?') + data
     }
 
-    console.log(type, data, href, headers)
-
     // send
-    xhr.open(type, href, true)
+    xhr.open(type, url, true)
     for (var key in headers) {
       xhr.setRequestHeader(key, headers[key])
     }
     xhr.send(type == 'POST' ? data : null)
+
     return xhr
-  }
-
-  // x-www-form-urlencoded
-  function toUrlSearchParams(value) {
-    var params = ''
-
-    function loopValue(key, value) {
-      if (value && (value.constructor == Object || value instanceof Array)) {
-        for (var k in value) {
-          if (!value.hasOwnProperty(k)) continue
-          var subKey = !key ? k : '[' + k + ']' // obj[k]
-          loopValue(key + subKey, value[k])
-        }
-      } else {
-        if (value === undefined || value === null) value = ''
-        if (typeof value === 'function') value = value()
-        key = key.replace(/\[\d+?\]$/g, '[]') // obj[arr][0] => obj[arr][]
-        key = encodeURIComponent(key)
-        value = encodeURIComponent(value)
-        params += (params ? '&' : '') + key + '=' + value // &obj[k][s]=value
-      }
-    }
-    loopValue('', value)
-
-    return params.replace(/%20/g, '+') // ' ' => '+'
   }
 
   // export
